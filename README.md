@@ -7,5 +7,10 @@ apple health data import and analysis
 
 #Example plots
 
+Heart rate
+
 ![image](https://github.com/jtb21091/applehealth/assets/60986161/4333c523-cf64-4480-b58c-940b93bfca72)
 
+Resting heart rate
+
+![image](https://github.com/jtb21091/applehealth/assets/60986161/b652a60c-eb99-4179-aa25-42a940c6788f)
