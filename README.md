@@ -22,3 +22,7 @@ Respiratory  rate
 step length
 
 <img width="718" alt="image" src="https://github.com/jtb21091/applehealth/assets/60986161/01ed34ea-64c0-4108-a125-826a08e6a2ef">
+
+Sleeping wrist temperature
+
+<img width="885" alt="image" src="https://github.com/jtb21091/applehealth/assets/60986161/f381cc5c-d194-42da-8ccd-25783450a0b5">
