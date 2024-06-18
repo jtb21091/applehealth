@@ -5,6 +5,8 @@ apple health data import and analysis
 
 #open export.xml file(s) in microsoft excel, Power BI your xml file, load and transform, save to xlsx files, clean and manipulate data
 
+![image](https://github.com/jtb21091/applehealth/assets/60986161/331584bd-d8cd-467b-81d7-166339d85094)
+
 #Example plots
 
 Heart rate
