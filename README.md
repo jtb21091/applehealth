@@ -1,7 +1,7 @@
 # applehealth
 apple health data import and analysis
 
-#export data from phone health app and export to your computer
+#export data from phone health app (top right icon in health app, then export all data) and export to your computer
 
 #open export.xml file(s) in microsoft excel, Power BI your xml file, load and transform, save to xlsx files, clean and manipulate data
 
