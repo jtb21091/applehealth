@@ -4,6 +4,9 @@ apple health data import and analysis
 #export data from phone health app (top right icon in health app, then export all data) and export to your computer
 
 perform step1 file in this repository in jupyter notebooks or save it as a python file.
+https://github.com/jtb21091/applehealth/blob/main/files/step1.ipynb
+
+
 ![image](https://github.com/jtb21091/applehealth/assets/60986161/331584bd-d8cd-467b-81d7-166339d85094)
 
 #Example plots
