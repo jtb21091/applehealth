@@ -10,3 +10,6 @@ open excel > data > get data (power query) (you may need power BI ~ just sign up
 
 #3
 run the code in VS code (make sure you have correct path for excel file)
+
+![image](https://github.com/user-attachments/assets/5b2c879c-91a5-4db2-b0fe-b9a52a1bbb59)
+
