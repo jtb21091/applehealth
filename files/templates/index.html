@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Data Analysis</title>
+</head>
+<body>
+    <h1>Health Data Analysis</h1>
+    <form method="POST">
+        <label for="type">Select Category:</label>
+        <select name="type" id="type">
+            {% for type in types %}
+                <option value="{{ type }}" {% if type == selected_type %}selected{% endif %}>{{ type }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date" value="{{ start_date }}">
+        <br>
+        <label for="end_date">End Date:</label>
+        <input type="date" id="end_date" name="end_date" value="{{ end_date }}">
+        <br>
+        <button type="submit">Update</button>
+    </form>
+    <hr>
+    <h2>Statistics</h2>
+    <p>Mean Value: {{ mean_value }}</p>
+    <p>Upper Limit (Mean + 2 Std Dev): {{ upper_limit }}</p>
+    <p>Lower Limit (Mean - 2 Std Dev): {{ lower_limit }}</p>
+    <hr>
+    <h2>Graph</h2>
+    <div>{{ graph_html|safe }}</div>
+</body>
+</html>
