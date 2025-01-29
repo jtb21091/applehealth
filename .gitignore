@@ -1,0 +1,8 @@
+/apple_health_export
+/apple_health_export.zip
+/apple_health_export 2
+/apple_health_export 2.zip
+*.csv
+*.xls
+*.xlsx
+*.DS_Store
