@@ -2,6 +2,8 @@
 
 #steps
 
+Apple must have changed their XML output recently or there is something wrong with the export now. I am working on this again.
+
 #1
 download and export all apple health data from phone (top right in health app)
 
