@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apple Health Data Visualizer</title>
 
-    <!-- Fix: Corrected PapaParse URL -->
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
@@ -61,12 +60,13 @@
                 const record = records[i];
                 let dateString = record.getAttribute("creationDate") || record.getAttribute("startDate");
                 let dateObj = new Date(dateString);
+                let value = parseFloat(record.getAttribute("value"));
 
-                if (!isNaN(dateObj)) { // Only add valid dates
+                if (!isNaN(dateObj) && !isNaN(value) && value > 0) { // Exclude invalid, null, or zero values
                     parsedData.push({
                         type: record.getAttribute("type"),
                         timestamp: dateObj,
-                        value: parseFloat(record.getAttribute("value")) || null
+                        value: value
                     });
                 }
             }
@@ -92,7 +92,7 @@
         }
 
         function setupDateFilters() {
-            const timestamps = parsedData.map(d => d.timestamp).filter(ts => ts instanceof Date && !isNaN(ts));
+            const timestamps = parsedData.map(d => d.timestamp);
             if (timestamps.length === 0) return;
 
             const minDate = new Date(Math.min(...timestamps));
@@ -122,9 +122,17 @@
             const timestamps = filteredData.map(d => d.timestamp);
             const values = filteredData.map(d => d.value);
 
+            // Ensure values exclude 0 and null before calculations
+            const cleanedValues = values.filter(v => v > 0 && v !== null);
+            
+            if (cleanedValues.length === 0) {
+                document.getElementById("chart").innerHTML = "<p>No valid data available after filtering.</p>";
+                return;
+            }
+
             // Calculate Mean & Standard Deviation
-            const mean = values.reduce((a, b) => a + b, 0) / values.length;
-            const std = Math.sqrt(values.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / values.length);
+            const mean = cleanedValues.reduce((a, b) => a + b, 0) / cleanedValues.length;
+            const std = Math.sqrt(cleanedValues.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / cleanedValues.length);
 
             const upperBound = mean + 2 * std;
             const lowerBound = mean - 2 * std;
