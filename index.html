@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Data Visualizer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/papaparse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        #chart {
+            width: 90%;
+            height: 500px;
+            margin: auto;
+        }
+        input, select, button {
+            margin: 10px;
+            padding: 8px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Upload Apple Health XML File</h2>
+    <input type="file" id="xmlUpload" accept=".xml">
+    <button onclick="processXML()">Process File</button>
+    <button onclick="downloadCSV()">Download CSV</button>
+
+    <h2>Select Health Data Type:</h2>
+    <select id="typeSelect"></select>
+
+    <h2>Select Date Range:</h2>
+    <label for="startDate">Start Date:</label>
+    <input type="date" id="startDate">
+    <label for="endDate">End Date:</label>
+    <input type="date" id="endDate">
+
+    <h2>Data Visualization</h2>
+    <div id="chart"></div>
+
+    <script>
+        let parsedData = []; // Store parsed CSV data
+
+        function processXML() {
+            const file = document.getElementById('xmlUpload').files[0];
+            if (!file) {
+                alert("Please select an XML file.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const xmlString = event.target.result;
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+                parseHealthData(xmlDoc);
+            };
+            reader.readAsText(file);
+        }
+
+        function parseHealthData(xmlDoc) {
+            const records = xmlDoc.getElementsByTagName("Record");
+            parsedData = [];
+
+            for (let i = 0; i < records.length; i++) {
+                const record = records[i];
+                parsedData.push({
+                    type: record.getAttribute("type"),
+                    timestamp: new Date(record.getAttribute("creationDate")), // Convert to Date object
+                    value: parseFloat(record.getAttribute("value")) || null
+                });
+            }
+
+            // Sort data by date (ascending)
+            parsedData.sort((a, b) => a.timestamp - b.timestamp);
+
+            populateTypeDropdown();
+            setupDateFilters();
+        }
+
+        function populateTypeDropdown() {
+            const select = document.getElementById("typeSelect");
+            select.innerHTML = ""; // Clear previous options
+
+            const uniqueTypes = [...new Set(parsedData.map(d => d.type))];
+            uniqueTypes.forEach(type => {
+                const option = document.createElement("option");
+                option.value = type;
+                option.textContent = type;
+                select.appendChild(option);
+            });
+
+            select.addEventListener("change", () => updateChart());
+            updateChart(); // Display first type by default
+        }
+
+        function setupDateFilters() {
+            const minDate = new Date(Math.min(...parsedData.map(d => d.timestamp)));
+            const maxDate = new Date(Math.max(...parsedData.map(d => d.timestamp)));
+
+            document.getElementById("startDate").value = minDate.toISOString().split("T")[0];
+            document.getElementById("endDate").value = maxDate.toISOString().split("T")[0];
+
+            document.getElementById("startDate").addEventListener("change", updateChart);
+            document.getElementById("endDate").addEventListener("change", updateChart);
+
+            updateChart(); // Auto show full range if no date is chosen
+        }
+
+        function updateChart() {
+            const selectedType = document.getElementById("typeSelect").value;
+            const startDateInput = document.getElementById("startDate").value;
+            const endDateInput = document.getElementById("endDate").value;
+
+            let startDate = startDateInput ? new Date(startDateInput) : new Date(Math.min(...parsedData.map(d => d.timestamp)));
+            let endDate = endDateInput ? new Date(endDateInput) : new Date(Math.max(...parsedData.map(d => d.timestamp)));
+
+            const filteredData = parsedData.filter(d =>
+                d.type === selectedType && d.timestamp >= startDate && d.timestamp <= endDate
+            );
+
+            if (filteredData.length === 0) {
+                document.getElementById("chart").innerHTML = "<p>No data available for the selected filters.</p>";
+                return;
+            }
+
+            const timestamps = filteredData.map(d => d.timestamp);
+            const values = filteredData.map(d => d.value);
+
+            const trace = {
+                x: timestamps,
+                y: values,
+                mode: "lines",
+                type: "scatter",
+                name: selectedType,
+                line: { width: 2 }
+            };
+
+            const layout = {
+                title: `Health Data: ${selectedType}`,
+                xaxis: { title: "Timestamp" },
+                yaxis: { title: "Value" },
+                width: 900,
+                height: 500
+            };
+
+            Plotly.newPlot("chart", [trace], layout);
+        }
+
+        function downloadCSV() {
+            if (parsedData.length === 0) {
+                alert("No data available to download.");
+                return;
+            }
+
+            const csvData = parsedData.map(row => ({
+                Type: row.type,
+                Timestamp: row.timestamp.toISOString(),
+                Value: row.value
+            }));
+
+            const csv = Papa.unparse(csvData);
+            const blob = new Blob([csv], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "health_data.csv";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+</html>
